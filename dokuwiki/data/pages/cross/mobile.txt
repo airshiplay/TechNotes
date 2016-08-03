@@ -1,0 +1,16 @@
+====== 跨平台开发框架 ======
+
+
+===== weex =====
+[[mobile:weex|weex]]
+
+官方支持iOS、Android、HTML5.
+
+Write Once, Run Everywhere。一次编写可生成三平台代码。
+
+DSL模板学习超简单，直接写HTML、CSS、JS。这意味着可以直接用现有编辑器和IDE的代码补全、提示、检查等功能。
+
+轻量级、可扩展、高性能。
+
+集成花样多，可在HTML5页面嵌入，也可嵌在原生UI中。
+

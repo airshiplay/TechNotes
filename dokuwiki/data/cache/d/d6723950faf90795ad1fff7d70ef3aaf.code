@@ -1,0 +1,1 @@
+<span class="kw2">svn cat</span> http:<span class="sy0">//</span>localhost<span class="sy0">/</span>test<span class="sy0">/</span>readme.txt  <span class="co0">#</span>

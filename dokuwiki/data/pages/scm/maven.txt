@@ -1,0 +1,10 @@
+
+====== cached in the local repository ======
+
+[ERROR] Failed to execute goal on project library: Could not resolve dependencies for project com.github.chrisbanes.pulltorefresh:library:apklib:2.1.2-SNAPSHOT: Failure to find com.google.android:android:jar:4.3.0 in http://192.168.1.250:8081/repository/maven-public/ was cached in the local repository, resolution will not be reattempted until the update interval of yikang-nexus has elapsed or updates are forced -> [Help 1]
+
+
+
+mvn clean install -U
+
+

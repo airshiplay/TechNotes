@@ -1,0 +1,9 @@
+====== Portal ======
+
+Pluto，Liferay，eXo,Jetspeed
+
+
+Portlets in Action is a comprehensive, hands-on guide to building portlet-driven applications in Java. Covers Portlet 2.0, Spring 3.0 Portlet MVC, WSRP 2.0, Portlet Bridges, Ajax, Comet, Liferay, GateIn, Spring JDBC, and Hibernate.
+
+
+http://portals.apache.org/

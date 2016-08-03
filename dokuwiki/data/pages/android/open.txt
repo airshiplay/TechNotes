@@ -1,0 +1,16 @@
+
+[[android:Android打包提速实践|Android打包提速实践]]
+========
+Apk打包是Android开发者们几乎每天都会做的事情。由于业务不断发展，Apk也变的越来越大，打包时间也变的越来越长。本文作者结合实践经验，提出了debug包和release包的打包提速的方案。阅读文章，看看作者是如何实现打包提速的。
+
+
+
+[[https://github.com/wenmingvs/LogReport|崩溃日志上传框架]]
+========
+当App崩溃的时，把崩溃信息保存到本地的同时，自动给GitHub提交崩溃issue，你只需要几句，就能完成所有配置，更多细节请了解下方
+
+另外，崩溃信息支持邮件上传和HTTP上传，自动提交到issue使用的是邮件上传的方式。如果你拥有私人服务器，你也可以使用HTTP上传
+
+[[https://github.com/niorgai/StatusBarCompat|Status Bar Utils ---- Change Status Bar Mode Simply]]
+========
+<wrap em>Only work for SDK >= 19.</wrap>

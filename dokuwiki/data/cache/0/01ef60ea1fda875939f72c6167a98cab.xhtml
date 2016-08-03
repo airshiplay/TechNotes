@@ -1,0 +1,258 @@
+
+<h1 class="sectionedit1" id="删除不必要的module">删除不必要的module</h1>
+<div class="level1">
+
+<p>
+AS的代码结构和eclipse完全不同，它为开发者提供了单工程多module的形式。但多建立一个module就需要多维护一个module。所以如果仅仅是为了方便写代码而建立一个module是不可取的，我强烈建议先做好项目结构的梳理再考虑是否需要建立module。
+下面是一个多module的app结构图：
+<img src="/lib/exe/fetch.php?media=android:5854-09a8713d38f3e5e0.png" class="mediacenter" alt="" />
+framework  
+</p>
+
+<p>
+在as中通过自带的预览工具，也可以帮助我们进行modules的梳理：
+<img src="/lib/exe/fetch.php?media=android:5854-eb80ba8ccc6b8623.png" class="mediacenter" alt="" />
+module
+这个项目中的module有很多，所以gradle在编译的时候会去检测module的依赖链，gradle会帮助我们层层梳理module之间的关系，避免因为module之间相互引用而来带的问题。这些梳理工作和module的合并工作都会带来build的时间，如果你的项目build十分缓慢，我强烈建议你去梳理下module的关系，合并部分module。将稳定的底层module打包为aar，上传到公司的maven仓库，借此来加快build速度。
+</p>
+
+</div>
+<!-- EDIT1 SECTION "删除不必要的module" [1-1094] -->
+<h1 class="sectionedit2" id="删除module中的无用文件">删除module中的无用文件</h1>
+<div class="level1">
+
+<p>
+as默认在建立module的同时会建立test目录：
+<img src="/lib/exe/fetch.php?media=android:5854-28c88a58c559b1bf.png" class="mediacenter" alt="" />
+</p>
+
+<p>
+如果你根本没有编写测试代码的打算，你完全可以删除test目录。
+当然，如果你的module就是纯代码，根本没用到资源文件，也请一并把res目录删除掉。
+<img src="/lib/exe/fetch.php?media=android:5854-d57409b8a787f635.png" class="mediacenter" alt="" />
+</p>
+
+</div>
+<!-- EDIT2 SECTION "删除module中的无用文件" [1095-1492] -->
+<h1 class="sectionedit3" id="删除主项目中无用的资源文件">删除主项目中无用的资源文件</h1>
+<div class="level1">
+
+<p>
+项目开发中多少都会存留一些无用的代码和资源，资源越多打包合并资源的时间就越长。然而删除无用的代码对于提升打包速度的作用微乎其微，我们可以利用混淆这一利器在打release包的时候将无用代码一次性剔除掉。对于资源文件，as提供了自动检测失效文件和删除的功能，这个绝对值得一试。
+</p>
+
+<p>
+<img src="/lib/exe/fetch.php?media=android:5854-c4dc3da94f87fa3e.png" class="mediacenter" alt="" />
+</p>
+
+<p>
+在弹出的对话框中，我强烈建议不要勾选删除无用的id，因为databinding会用到一些id，但这在代码中没有体现，所以as会认为这些id是无用的。如果你删除了这些id，那么就等着编译失败吧。别问我是怎么知道的T_T。顺便说一下，每次做这种操作前记得commit一下，方便做diff。
+</p>
+
+<p>
+<img src="/lib/exe/fetch.php?media=android:5854-8d8178346df70bd1.png" class="mediacenter" alt="" />
+</p>
+
+</div>
+<!-- EDIT3 SECTION "删除主项目中无用的资源文件" [1493-2403] -->
+<h2 class="sectionedit4" id="减少方法数_不使用multidex">减少方法数，不使用multidex</h2>
+<div class="level2">
+
+<p>
+关于什么是multidex，和怎么使用它，请参考这篇文章：
+<a href="http://blog.csdn.net/t12x3456/article/details/40837287" class="urlextern" title="http://blog.csdn.net/t12x3456/article/details/40837287" rel="nofollow">http://blog.csdn.net/t12x3456/article/details/40837287</a>
+它是一种不得已而为之的举措，在使用的时候我经常会发现在一些特殊的机型上会出现一些奇奇怪怪的错误，总之就是有很多坑。
+在build时间这一块，multidex因为有分包和压缩的过程，所以它对于编译速度方面有有严重的影响。我通过dexcount这个插件分析了我们的项目后，发现项目中有一些库已经不再用或者有更好的替代品，于是我精简了第三方库，并且开启了support包的混淆，最终让我们的项目的release包的方法数达到了一个合理的水平。
+</p>
+
+<p>
+为了控制变量，我专门做了一个空项目，用来做support包混淆前后的对比，我们来看一下数据：
+</p>
+
+<p>
+当一个第三方sdk说不要混淆support包，不要混淆我sdk的代码的时候，我强烈建议你考虑下方法数的问题。混淆的作用之一是将代码进行优化和缩短方法名、字段名；作用之二就是删除没有被用到的变量和方法。第三方sdk的方法数众多，如果没办法混淆，那么会带来大量的方法数，这点需要十分的小心。混淆虽然是一个十分有用的工具，但也是很多错误的来源，所以我建议你小心谨慎的多多使用它！
+</p>
+
+</div>
+<!-- EDIT4 SECTION "减少方法数，不使用multidex" [2404-3822] -->
+<h2 class="sectionedit5" id="对第三方库进行优化">对第三方库进行优化</h2>
+<div class="level2">
+
+<p>
+上面讲到了优化第三方库会减少方法数，这里简单讲一下一般的优化策略：
+</p>
+
+<p>
+1.利用debugCompile来依赖debug时才用到的库
+debugCompile我在第三方库开发实践中已经讲到了，这里就不多说了。
+</p>
+
+<p>
+2.利用更小的库替代现有的库
+这个就要看开发人员的经验和知识面了，虽然是废话，如果能真正做到，成果是极其明显的。
+</p>
+
+<p>
+3.利用exclude来排出某些不需要的依赖
+以rn举例，rn是一个庞大的库，引入rn后会依赖很多别的库
+</p>
+
+<p>
+在我们的项目中，我利用了自己编写的网络请求模块进行网络请求，所以我就想要剔除掉rn引入的okhttp，我又发现它还引入了support包，而我项目中也肯定有support包，所以我也想要排出掉它（不排除support包也没事，gradle会仅包含最新的库版本，我这里仅仅是举个例子）
+</p>
+<pre class="code">  compile (&#039;com.facebook.react:react-native:+&#039;){
+    exclude group: &#039;com.squareup.okhttp3&#039;, module: &#039;okhttp&#039;
+    exclude group: &#039;com.android.support&#039;, module: &#039;support-v4&#039;
+    exclude group: &#039;com.android.support&#039;, module: &#039;support-v7&#039;
+  }</pre>
+
+<p>
+重新build一次后，你会发现okhttp已经被剔除掉了：
+对于本地的module也是可以这样处理的：
+</p>
+<pre class="code">compile(project(&#039;:react-native-custom-module&#039;)) {
+    exclude group: &#039;com.facebook.react&#039;, module: &#039;react-native&#039;
+}</pre>
+
+</div>
+<!-- EDIT5 SECTION "对第三方库进行优化" [3823-5254] -->
+<h2 class="sectionedit6" id="debug时跳过某些task">debug时跳过某些task</h2>
+<div class="level2">
+
+<p>
+我们的项目中用到了很多gradle插件，有些插件会在build时运行自己的task：
+</p>
+
+<p>
+tiny是用来压缩图片的，buildtime是用来检测build时间的，dexcount是用来分析方法数的。这些插件对于我们的开发带来了巨大的帮助，但也增加了build时间。
+</p>
+
+<p>
+在每次发版本前开启tiny，直接build一次，压缩完图片后将其关闭。
+在需要检测和诊断build时间的时候启用buildtime，一般的debug时不开启它。
+在release包中开启dexcount，并且让其于Jenkins进行结合。这样既不会影响debug包，又可以进行方法数的持续监控。
+关于dexcount是如何和Jenkins结合的，并且是如何产生下面的图表的，请参考：
+<a href="http://www.th7.cn/Program/Android/201606/870070.shtml" class="urlextern" title="http://www.th7.cn/Program/Android/201606/870070.shtml" rel="nofollow">http://www.th7.cn/Program/Android/201606/870070.shtml</a>
+</p>
+
+</div>
+<!-- EDIT6 SECTION "debug时跳过某些task" [5255-6073] -->
+<h1 class="sectionedit7" id="放弃lambda表达式_谨慎使用aspectj">放弃lambda表达式，谨慎使用AspectJ</h1>
+<div class="level1">
+
+<p>
+目前android不支持lambda，所以很多人都引入了 retrolambda。一旦你引入了这个库，你就必须面临着字节码转换而带来的build慢的问题。你用的越多，代码看起来越简单，但build时间也会越来越长。所以，我不推荐在目前的阶段使用它，还是等等看看谷歌jack的表现吧。
+</p>
+
+<p>
+AspectJ是aop的很好的工具，但因为需要在build时进行代码的插入，所以使用AspectJ后build时间会明显的增加，具体看使用量而定。AspectJ的优缺点十分明显，我这里只是提出来，具体如何权衡，就看大家自己了。我的话，因为用了<a href="https://github.com/tianzhijiexian/UiBlock/" class="urlextern" title="https://github.com/tianzhijiexian/UiBlock/" rel="nofollow">UiBlock</a>所以引入了AspectJ，让我debug是build的速度慢了三秒钟，但UiBlock的好处也十分明显，所以我还是用了它。
+</p>
+
+</div>
+<!-- EDIT7 SECTION "放弃lambda表达式，谨慎使用AspectJ" [6074-6965] -->
+<h1 class="sectionedit8" id="dev包中设置minsdkversion为21">dev包中设置minSdkVersion为21</h1>
+<div class="level1">
+
+<p>
+因为在debug时，我们不会去开启混淆，所以debug包是需要用mulitdex的
+</p>
+
+<p>
+android5.0对于mulitdex做了优化，具体可以参考官方的文章，我就直接说怎么做就好。先在gradle的配置中添加一个flavors，比如叫做dev，在dev中配置最小支持的android版本为21.
+</p>
+
+<p>
+然后在build时选中devDebug，这样你debug的时候就是走最低支持api为21的编译方式了。
+</p>
+<!-- EDIT9 PLUGIN_WRAP_START [0-] --><div class="wrap_center wrap_round wrap_info plugin_wrap" style="width: 60%;">
+<p>
+特别注意：
+</p>
+</div><!-- EDIT10 PLUGIN_WRAP_END [0-] -->
+<p>
+你现在为了提速将最低版本写为21，假设你最终可能支持的是16。这就有个风险点，因为as会在你写代码的时候认为你的应用就是支持21的，所以对于一些16~21的api不会有风险提示。因此使用16~21之间的api时需要人为的注意，这是最大的风险点！！！
+</p>
+
+</div>
+<!-- EDIT8 SECTION "dev包中设置minSdkVersion为21" [6966-7818] -->
+<h1 class="sectionedit11" id="开启offline">开启offline</h1>
+<div class="level1">
+
+<p>
+这个是最简单直接的加速方案了，效果极其明显，谁用谁知道！
+</p>
+
+</div>
+<!-- EDIT11 SECTION "开启offline" [7819-7942] -->
+<h2 class="sectionedit12" id="优化gradle">优化gradle</h2>
+<div class="level2">
+
+<p>
+gradle的各种优化配置网上已经有很多了，这里建议看这篇文章<a href="http://mp.weixin.qq.com/s?__biz=MzA4MjU5NTY0NA==&amp;mid=2653418586&amp;idx=1&amp;sn=6d85a5733bac3d1e462e908cc49d9502&amp;scene=23&amp;srcid=0428a5Siu61dUqDI1IyYWUaO#rd" class="urlextern" title="http://mp.weixin.qq.com/s?__biz=MzA4MjU5NTY0NA==&amp;mid=2653418586&amp;idx=1&amp;sn=6d85a5733bac3d1e462e908cc49d9502&amp;scene=23&amp;srcid=0428a5Siu61dUqDI1IyYWUaO#rd" rel="nofollow">外部链接</a>：
+</p>
+
+<p>
+我自己的配置如下：
+</p>
+<pre class="code">org.gradle.daemon=true
+org.gradle.parallel=true
+
+# ndk
+android.useDeprecatedNdk=true
+
+org.gradle.configureondemand=truex
+org.gradle.jvmargs=-Xmx3072m -XX:MaxPermSize=1024m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8</pre>
+
+<p>
+总的来说除了增加内存这一项感觉还有点用处外，其余配置都不痛不痒。我最后直接加了4g的内存条，一次性解决了大多数的问题。
+</p>
+
+</div>
+<!-- EDIT12 SECTION "优化gradle" [7943-8667] -->
+<h2 class="sectionedit13" id="优化crashlytics的upload">优化crashlytics的upload</h2>
+<div class="level2">
+
+<p>
+上面讲到的都是build过程中的提速，但打包不仅仅包含了build，还包含了混淆，签名等过程。如果你的项目用了crashlytics，crashlytics会在混淆时自动上传map文件到服务器，这样可以帮助你在分析崩溃的时候看到的是混淆前的代码和行数，十分方便。
+万事有利有弊，我们项目的map文件为6m左右，crashlytics的服务器又是在国外，所以每次都会需要很长的一段时间。
+优化点主要是提升上行带宽和网络速度，前者需要硬件的支持，后者可以通过vpn进行优化。在配置release包打包命令的时候，可以不用每次都把build目录删除，这在一定程度上也可解决此问题。
+</p>
+
+</div>
+<!-- EDIT13 SECTION "优化crashlytics的upload" [8668-9433] -->
+<h2 class="sectionedit14" id="利用multichannelpackagetool进行多渠道打包">利用MultiChannelPackageTool进行多渠道打包</h2>
+<div class="level2">
+
+<p>
+我们的应用可能会被分发到多个渠道，而我们又想进行多个渠道的数据分析，这就产生了目前android要打多个渠道包的现状。<a href="http://geek.csdn.net/news/detail/76488" class="urlextern" title="http://geek.csdn.net/news/detail/76488" rel="nofollow">这篇文章</a>详细的分析了国内最高效的打包方案，文章短小精干，值得一读。
+我选择的是<a href="https://github.com/seven456/MultiChannelPackageTool" class="urlextern" title="https://github.com/seven456/MultiChannelPackageTool" rel="nofollow">MultiChannelPackageTool</a>来进行打包，它的速度是最快的，而且使用方式十分的简单。他的原理是在zip文件的comment中加入渠道号，这样既可以写入渠道号又不会破坏zip的签名，因为apk本身就是一个zip文件，所以这个规则是可靠并完全适用的。
+具体的原理和实现方案也不难，这里可以参考赵林写的<a href="http://pingguohe.net/2016/03/21/Dynimac-write-infomation-into-apk.html?comefrom=http://blogread.cn/news/" class="urlextern" title="http://pingguohe.net/2016/03/21/Dynimac-write-infomation-into-apk.html?comefrom=http://blogread.cn/news/" rel="nofollow">这篇文章</a>进行深入了解。
+</p>
+
+<p>
+现在我们可以通过
+</p>
+<pre class="code">MCPTool.getChannelId(context, &quot;password&quot;, &quot;&quot;)</pre>
+
+<p>
+得到渠道名称，如果你用的是友盟来做监控和统计，那么你肯定需要在代码中设置友盟的key和channel名。通过友盟的文档和论坛我发现友盟最新的sdk提供了这样的机制，于是就有了如下代码：
+</p>
+<pre class="code">// 设置key和渠道号，在application中就需要进行设置
+UMAnalyticsConfig config = new UMAnalyticsConfig(context, appKey, channelId);
+MobclickAgent.startWithConfigure(config);
+
+// 得到key和渠道号
+String appKey = AnalyticsConfig.getAppkey(activity);
+String channel = AnalyticsConfig.getChannel(activity);</pre>
+
+</div>
+<!-- EDIT14 SECTION "利用MultiChannelPackageTool进行多渠道打包" [9434-11074] -->
+<h2 class="sectionedit15" id="采用增量编译">采用增量编译</h2>
+<div class="level2">
+
+<p>
+as目前已经支持了增量编译，但是效果真的很差，甚至经常会增加build时间，所以这里我还是推荐一直在更新的<a href="http://zeroturnaround.com/software/jrebel-for-android/" class="urlextern" title="http://zeroturnaround.com/software/jrebel-for-android/" rel="nofollow">Jrebel</a>做增量编译的工具。我之前写《Android中UI实时预览实践》的时候就有推荐过它，只不过那时候真的太贵了。现在as出了增量编译，它也坐不住了，立刻降价，价钱还算是可以接收。至于效果嘛，我可以说是目前android增量编译做的最好的了，如果你写的是小型应用的话，效果会更好。现在它已经不用我们单独配置maven仓库了，完全和项目解耦，而且它竟然支持注解和aop，堪称黑科技！所以，如果你有心想要加快打包的速度，我强烈推荐你去试用上21天，看看它是否值得你为之付费。
+</p>
+
+</div>
+<!-- EDIT15 SECTION "采用增量编译" [11075-] -->

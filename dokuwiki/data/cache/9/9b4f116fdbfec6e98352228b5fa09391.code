@@ -1,0 +1,4 @@
+<span class="kw2">svn add</span> test.php                  <span class="co0">#添加test.php </span>
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;添加我的测试用test.php&quot;</span> test.php
+<span class="kw2">svn add</span> <span class="sy0">*</span>.php                    <span class="co0">#添加当前目录下所有的php文件</span>
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;添加我的测试用全部php文件&quot;</span> <span class="sy0">*</span>.php

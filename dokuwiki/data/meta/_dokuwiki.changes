@@ -1,0 +1,48 @@
+1469503978	::1	C	start	admin	创建		37
+1469505136	172.19.1.34	C	android:open	admin	创建		378
+1469505340	172.19.1.34	C	plugins:markdown	admin	创建		487
+1469505478	172.19.1.34	C	android:android打包提速实践	admin	创建		584
+1469508942	172.19.1.34	E	android:android打包提速实践	admin			15
+1469509594	172.19.1.34	E	android:android打包提速实践	admin			5196
+1469509844	172.19.1.34	E	android:android打包提速实践	admin	[对第三方库进行优化] 		1
+1469510264	172.19.1.34	E	android:android打包提速实践	admin	[对第三方库进行优化] 		2873
+1469510510	172.19.1.34	E	android:android打包提速实践	admin	[优化gradle] 		3263
+1469510564	172.19.1.34	E	android:android打包提速实践	admin	[利用MultiChannelPackageTool进行多渠道打包] 		27
+1469516118	172.19.1.34	E	android:open	admin			430
+1469516790	172.19.1.34	E	android:open	admin			148
+1469520404	172.19.1.34	C	scm:git	admin	创建		9
+1469520434	172.19.1.34	C	scm:svn	admin	创建		9
+1469520454	172.19.1.34	C	scm	admin	创建		54
+1469520624	172.19.1.34	E	scm	admin			52
+1469520834	172.19.1.34	C	scm:scm-manager	admin	创建		1852
+1469608064	172.19.1.34	C	portal	admin	创建		286
+1469608120	172.19.1.34	E	portal	admin			29
+1469631042	::1	E	scm:svn	admin			1150
+1469631388	::1	E	scm:svn	admin	[提交] 		5
+1469631406	::1	E	scm:svn	admin	[添加新文件] 		5
+1469631424	::1	E	scm:svn	admin	[检出代码] 		5
+1469631552	::1	E	scm:svn	admin	[提交] 		698
+1469631644	::1	E	scm:svn	admin	[查看文件或者目录状态] 		337
+1469631874	::1	E	scm:svn	admin	[恢复本地修改] 		166
+1469632232	127.0.0.1	E	scm:svn		外部编辑		378
+1469632316	::1	E	scm:svn	admin	[创建纳入版本控制下的新目录] 		-19
+1469633154	::1	E	scm	admin			73
+1469633694	127.0.0.1	E	scm		外部编辑		9
+1469633776	::1	E	scm	admin	[版本控制软件-服务器版] 		-2
+1469645408	::1	E	android:open	admin			1
+1469958684	127.0.0.1	C	android:framework	admin	创建		440
+1469958882	127.0.0.1	E	android:framework	admin	[图片加载] 		598
+1469959010	127.0.0.1	E	android:framework	admin	[网络请求] 		484
+1469959132	127.0.0.1	E	android:framework	admin	[数据库] 		379
+1469959450	127.0.0.1	E	android:framework	admin	[数据库] 		1139
+1469959614	127.0.0.1	E	android:framework	admin	[响应式编程] 		691
+1469959998	127.0.0.1	C	mobile:weex	admin	创建		19
+1469960028	127.0.0.1	C	cross:mobile	admin	创建		436
+1469960120	127.0.0.1	E	cross:mobile	admin			4
+1469960138	127.0.0.1	E	cross:mobile	admin			2
+1469960810	127.0.0.1	C	h5	admin	创建		61
+1469961526	127.0.0.1	C	h5:nodejs	admin	创建		6038
+1469962156	127.0.0.1	E	h5:nodejs	admin	[nodejs] 		279
+1469971266	127.0.0.1	C	me.md	admin	创建		6
+1470017648	127.0.0.1	C	scm:maven	admin	创建		479
+1470017784	127.0.0.1	E	scm:maven	admin	[cached in the local repository] 		21

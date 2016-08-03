@@ -1,0 +1,4 @@
+<span class="kw2">svn mkdir</span> newdir
+<span class="kw2">svn mkdir</span> <span class="re5">-m</span> <span class="st0">&quot;Making a new dir.&quot;</span> svn:<span class="sy0">//</span>localhost<span class="sy0">/</span>test<span class="sy0">/</span>newdir 
+<span class="co0">#注：添加完子目录后，一定要回到根目录更新一下，不然在该目录下提交文件会提示“提交失败”</span>
+<span class="kw2">svn update</span>

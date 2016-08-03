@@ -1,0 +1,8 @@
+<span class="kw2">svn st</span> 目录路径<span class="sy0">/</span>名
+<span class="kw2">svn status</span> 目录路径<span class="sy0">/</span>名 <span class="co0"># 目录下的文件和子目录的状态，正常状态不显示 </span>
+　　　　　　　　　　　　　<span class="co0">#【?：不在svn的控制中；  M：内容被修改；C：发生冲突；</span>
+　　　　　　　　　　　　　　<span class="co0">#A：预定加入到版本库；K：被锁定】 </span>
+<span class="kw2">svn</span>  <span class="re5">-v</span> 目录路径<span class="sy0">/</span>名
+<span class="kw2">svn status</span> <span class="re5">-v</span> 目录路径<span class="sy0">/</span>名 <span class="co0"># 显示文件和子目录状态</span>
+　　　　　　　　　　　　　　<span class="co0">#【第一列保持相同，第二列显示工作版本号，</span>
+　　　　　　　　　　　　　　　<span class="co0">#第三和第四列显示最后一次修改的版本号和修改人】 </span>

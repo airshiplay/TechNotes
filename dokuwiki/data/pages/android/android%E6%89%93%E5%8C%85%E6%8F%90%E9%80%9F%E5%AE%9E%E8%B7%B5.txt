@@ -1,0 +1,173 @@
+====== 删除不必要的module======
+AS的代码结构和eclipse完全不同，它为开发者提供了单工程多module的形式。但多建立一个module就需要多维护一个module。所以如果仅仅是为了方便写代码而建立一个module是不可取的，我强烈建议先做好项目结构的梳理再考虑是否需要建立module。
+下面是一个多module的app结构图：
+{{ :android:5854-09a8713d38f3e5e0.png?nolink |}}
+framework  
+
+在as中通过自带的预览工具，也可以帮助我们进行modules的梳理：
+{{ :android:5854-eb80ba8ccc6b8623.png?nolink |}}
+module
+这个项目中的module有很多，所以gradle在编译的时候会去检测module的依赖链，gradle会帮助我们层层梳理module之间的关系，避免因为module之间相互引用而来带的问题。这些梳理工作和module的合并工作都会带来build的时间，如果你的项目build十分缓慢，我强烈建议你去梳理下module的关系，合并部分module。将稳定的底层module打包为aar，上传到公司的maven仓库，借此来加快build速度。
+
+
+====== 删除module中的无用文件 ======
+as默认在建立module的同时会建立test目录：
+{{ :android:5854-28c88a58c559b1bf.png?nolink |}}
+
+如果你根本没有编写测试代码的打算，你完全可以删除test目录。
+当然，如果你的module就是纯代码，根本没用到资源文件，也请一并把res目录删除掉。
+{{ :android:5854-d57409b8a787f635.png?nolink |}}
+
+====== 删除主项目中无用的资源文件 ======
+项目开发中多少都会存留一些无用的代码和资源，资源越多打包合并资源的时间就越长。然而删除无用的代码对于提升打包速度的作用微乎其微，我们可以利用混淆这一利器在打release包的时候将无用代码一次性剔除掉。对于资源文件，as提供了自动检测失效文件和删除的功能，这个绝对值得一试。
+
+
+{{ :android:5854-c4dc3da94f87fa3e.png?nolink |}}
+
+在弹出的对话框中，我强烈建议不要勾选删除无用的id，因为databinding会用到一些id，但这在代码中没有体现，所以as会认为这些id是无用的。如果你删除了这些id，那么就等着编译失败吧。别问我是怎么知道的T_T。顺便说一下，每次做这种操作前记得commit一下，方便做diff。
+ 
+{{ :android:5854-8d8178346df70bd1.png?nolink |}}
+
+===== 减少方法数，不使用multidex=====
+关于什么是multidex，和怎么使用它，请参考这篇文章：
+[[http://blog.csdn.net/t12x3456/article/details/40837287
+]]
+它是一种不得已而为之的举措，在使用的时候我经常会发现在一些特殊的机型上会出现一些奇奇怪怪的错误，总之就是有很多坑。
+在build时间这一块，multidex因为有分包和压缩的过程，所以它对于编译速度方面有有严重的影响。我通过dexcount这个插件分析了我们的项目后，发现项目中有一些库已经不再用或者有更好的替代品，于是我精简了第三方库，并且开启了support包的混淆，最终让我们的项目的release包的方法数达到了一个合理的水平。
+ 
+为了控制变量，我专门做了一个空项目，用来做support包混淆前后的对比，我们来看一下数据：
+
+当一个第三方sdk说不要混淆support包，不要混淆我sdk的代码的时候，我强烈建议你考虑下方法数的问题。混淆的作用之一是将代码进行优化和缩短方法名、字段名；作用之二就是删除没有被用到的变量和方法。第三方sdk的方法数众多，如果没办法混淆，那么会带来大量的方法数，这点需要十分的小心。混淆虽然是一个十分有用的工具，但也是很多错误的来源，所以我建议你小心谨慎的多多使用它！
+
+
+===== 对第三方库进行优化=====
+上面讲到了优化第三方库会减少方法数，这里简单讲一下一般的优化策略：
+
+1.利用debugCompile来依赖debug时才用到的库
+debugCompile我在第三方库开发实践中已经讲到了，这里就不多说了。
+
+2.利用更小的库替代现有的库
+这个就要看开发人员的经验和知识面了，虽然是废话，如果能真正做到，成果是极其明显的。
+
+3.利用exclude来排出某些不需要的依赖
+以rn举例，rn是一个庞大的库，引入rn后会依赖很多别的库
+
+在我们的项目中，我利用了自己编写的网络请求模块进行网络请求，所以我就想要剔除掉rn引入的okhttp，我又发现它还引入了support包，而我项目中也肯定有support包，所以我也想要排出掉它（不排除support包也没事，gradle会仅包含最新的库版本，我这里仅仅是举个例子）
+<code>
+  compile ('com.facebook.react:react-native:+'){
+    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    exclude group: 'com.android.support', module: 'support-v4'
+    exclude group: 'com.android.support', module: 'support-v7'
+  }
+</code>
+重新build一次后，你会发现okhttp已经被剔除掉了：
+对于本地的module也是可以这样处理的：
+ 
+<code>
+compile(project(':react-native-custom-module')) {
+    exclude group: 'com.facebook.react', module: 'react-native'
+}
+</code>
+
+===== debug时跳过某些task =====
+我们的项目中用到了很多gradle插件，有些插件会在build时运行自己的task：
+
+tiny是用来压缩图片的，buildtime是用来检测build时间的，dexcount是用来分析方法数的。这些插件对于我们的开发带来了巨大的帮助，但也增加了build时间。
+
+在每次发版本前开启tiny，直接build一次，压缩完图片后将其关闭。
+在需要检测和诊断build时间的时候启用buildtime，一般的debug时不开启它。
+在release包中开启dexcount，并且让其于Jenkins进行结合。这样既不会影响debug包，又可以进行方法数的持续监控。
+关于dexcount是如何和Jenkins结合的，并且是如何产生下面的图表的，请参考：
+http://www.th7.cn/Program/Android/201606/870070.shtml
+
+====== 放弃lambda表达式，谨慎使用AspectJ ======
+
+目前android不支持lambda，所以很多人都引入了 retrolambda。一旦你引入了这个库，你就必须面临着字节码转换而带来的build慢的问题。你用的越多，代码看起来越简单，但build时间也会越来越长。所以，我不推荐在目前的阶段使用它，还是等等看看谷歌jack的表现吧。
+
+AspectJ是aop的很好的工具，但因为需要在build时进行代码的插入，所以使用AspectJ后build时间会明显的增加，具体看使用量而定。AspectJ的优缺点十分明显，我这里只是提出来，具体如何权衡，就看大家自己了。我的话，因为用了[[https://github.com/tianzhijiexian/UiBlock/|UiBlock]]所以引入了AspectJ，让我debug是build的速度慢了三秒钟，但UiBlock的好处也十分明显，所以我还是用了它。
+
+====== dev包中设置minSdkVersion为21 ======
+
+因为在debug时，我们不会去开启混淆，所以debug包是需要用mulitdex的
+
+
+android5.0对于mulitdex做了优化，具体可以参考官方的文章，我就直接说怎么做就好。先在gradle的配置中添加一个flavors，比如叫做dev，在dev中配置最小支持的android版本为21.
+
+
+然后在build时选中devDebug，这样你debug的时候就是走最低支持api为21的编译方式了。
+
+
+
+<WRAP center round info 60%>
+特别注意：
+</WRAP>
+你现在为了提速将最低版本写为21，假设你最终可能支持的是16。这就有个风险点，因为as会在你写代码的时候认为你的应用就是支持21的，所以对于一些16~21的api不会有风险提示。因此使用16~21之间的api时需要人为的注意，这是最大的风险点！！！
+
+====== 开启offline ======
+这个是最简单直接的加速方案了，效果极其明显，谁用谁知道！
+
+
+
+
+
+
+
+
+
+
+
+===== 优化gradle =====
+ 
+
+
+gradle的各种优化配置网上已经有很多了，这里建议看这篇文章[[http://mp.weixin.qq.com/s?__biz=MzA4MjU5NTY0NA==&mid=2653418586&idx=1&sn=6d85a5733bac3d1e462e908cc49d9502&scene=23&srcid=0428a5Siu61dUqDI1IyYWUaO#rd|外部链接]]：
+
+我自己的配置如下：
+<code>
+org.gradle.daemon=true
+org.gradle.parallel=true
+
+# ndk
+android.useDeprecatedNdk=true
+
+org.gradle.configureondemand=truex
+org.gradle.jvmargs=-Xmx3072m -XX:MaxPermSize=1024m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+</code>
+总的来说除了增加内存这一项感觉还有点用处外，其余配置都不痛不痒。我最后直接加了4g的内存条，一次性解决了大多数的问题。
+
+
+===== 优化crashlytics的upload =====
+上面讲到的都是build过程中的提速，但打包不仅仅包含了build，还包含了混淆，签名等过程。如果你的项目用了crashlytics，crashlytics会在混淆时自动上传map文件到服务器，这样可以帮助你在分析崩溃的时候看到的是混淆前的代码和行数，十分方便。
+万事有利有弊，我们项目的map文件为6m左右，crashlytics的服务器又是在国外，所以每次都会需要很长的一段时间。
+优化点主要是提升上行带宽和网络速度，前者需要硬件的支持，后者可以通过vpn进行优化。在配置release包打包命令的时候，可以不用每次都把build目录删除，这在一定程度上也可解决此问题。
+
+===== 利用MultiChannelPackageTool进行多渠道打包 =====
+我们的应用可能会被分发到多个渠道，而我们又想进行多个渠道的数据分析，这就产生了目前android要打多个渠道包的现状。[[http://geek.csdn.net/news/detail/76488|这篇文章]]详细的分析了国内最高效的打包方案，文章短小精干，值得一读。
+我选择的是[[https://github.com/seven456/MultiChannelPackageTool|MultiChannelPackageTool]]来进行打包，它的速度是最快的，而且使用方式十分的简单。他的原理是在zip文件的comment中加入渠道号，这样既可以写入渠道号又不会破坏zip的签名，因为apk本身就是一个zip文件，所以这个规则是可靠并完全适用的。
+具体的原理和实现方案也不难，这里可以参考赵林写的[[http://pingguohe.net/2016/03/21/Dynimac-write-infomation-into-apk.html?comefrom=http://blogread.cn/news/|这篇文章]]进行深入了解。
+
+
+现在我们可以通过
+<code>
+MCPTool.getChannelId(context, "password", "")
+</code>
+得到渠道名称，如果你用的是友盟来做监控和统计，那么你肯定需要在代码中设置友盟的key和channel名。通过友盟的文档和论坛我发现友盟最新的sdk提供了这样的机制，于是就有了如下代码：
+<code>
+// 设置key和渠道号，在application中就需要进行设置
+UMAnalyticsConfig config = new UMAnalyticsConfig(context, appKey, channelId);
+MobclickAgent.startWithConfigure(config);
+
+// 得到key和渠道号
+String appKey = AnalyticsConfig.getAppkey(activity);
+String channel = AnalyticsConfig.getChannel(activity);
+</code>
+
+
+===== 采用增量编译 =====
+as目前已经支持了增量编译，但是效果真的很差，甚至经常会增加build时间，所以这里我还是推荐一直在更新的[[http://zeroturnaround.com/software/jrebel-for-android/|Jrebel]]做增量编译的工具。我之前写《Android中UI实时预览实践》的时候就有推荐过它，只不过那时候真的太贵了。现在as出了增量编译，它也坐不住了，立刻降价，价钱还算是可以接收。至于效果嘛，我可以说是目前android增量编译做的最好的了，如果你写的是小型应用的话，效果会更好。现在它已经不用我们单独配置maven仓库了，完全和项目解耦，而且它竟然支持注解和aop，堪称黑科技！所以，如果你有心想要加快打包的速度，我强烈推荐你去试用上21天，看看它是否值得你为之付费。
+
+
+
+
+
+

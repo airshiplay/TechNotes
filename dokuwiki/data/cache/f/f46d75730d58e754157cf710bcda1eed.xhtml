@@ -1,0 +1,83 @@
+
+<h1 class="sectionedit1" id="svn命令">svn命令</h1>
+<div class="level1">
+
+</div>
+<!-- EDIT1 SECTION "svn命令" [1-26] -->
+<h1 class="sectionedit2" id="检出代码">检出代码</h1>
+<div class="level1">
+<pre class="code bash"><span class="kw2">svn co</span> svn:<span class="sy0">//</span>localhost<span class="sy0">/</span>svn<span class="sy0">/</span>url <span class="sy0">/</span>home<span class="sy0">/</span>testtools <span class="re5">--username</span> admin
+<span class="kw2">svn co</span> http:<span class="sy0">//</span>localhost<span class="sy0">/</span>svn<span class="sy0">/</span>testapp <span class="re5">--username</span> admin
+<span class="kw2">svn checkout</span> svn:<span class="sy0">//</span>localhost<span class="sy0">/</span><span class="kw2">svn</span> <span class="sy0">/</span>home<span class="sy0">/</span>testtools <span class="re5">--username</span> admin
+<span class="kw2">svn checkout</span> http:<span class="sy0">//</span>localhost<span class="sy0">/</span>test<span class="sy0">/</span>testapp <span class="re5">--username</span> admin</pre>
+
+</div>
+<!-- EDIT2 SECTION "检出代码" [27-317] -->
+<h1 class="sectionedit3" id="添加新文件">添加新文件</h1>
+<div class="level1">
+<pre class="code bash"><span class="kw2">svn add</span> test.php                  <span class="co0">#添加test.php </span>
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;添加我的测试用test.php&quot;</span> test.php
+<span class="kw2">svn add</span> <span class="sy0">*</span>.php                    <span class="co0">#添加当前目录下所有的php文件</span>
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;添加我的测试用全部php文件&quot;</span> <span class="sy0">*</span>.php</pre>
+
+</div>
+<!-- EDIT3 SECTION "添加新文件" [318-609] -->
+<h1 class="sectionedit4" id="提交">提交</h1>
+<div class="level1">
+<pre class="code bash"><span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;提交当前目录下的全部在版本控制下的文件&quot;</span> <span class="sy0">*</span>  <span class="co0"># 注意这个*表示全部文件</span>
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> test.php
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> <span class="re5">-N</span> <span class="re5">--no-unlock</span> test.php <span class="co0"># 保持锁就用–no-unlock开关</span>
+<span class="kw2">svn ci</span> <span class="re5">-m</span> <span class="st0">&quot;提交当前目录下的全部在版本控制下的文件&quot;</span> <span class="sy0">*</span> <span class="co0"># 注意这个*表示全部文件</span>
+<span class="kw2">svn ci</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> test.php
+<span class="kw2">svn ci</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> <span class="re5">-N</span> <span class="re5">--no-unlock</span> test.php <span class="co0"># 保持锁就用–no-unlock开关</span></pre>
+
+</div>
+<!-- EDIT4 SECTION "提交" [610-1182] -->
+<h1 class="sectionedit5" id="查看文件或者目录状态">查看文件或者目录状态</h1>
+<div class="level1">
+<pre class="code bash"><span class="kw2">svn st</span> 目录路径<span class="sy0">/</span>名
+<span class="kw2">svn status</span> 目录路径<span class="sy0">/</span>名 <span class="co0"># 目录下的文件和子目录的状态，正常状态不显示 </span>
+　　　　　　　　　　　　　<span class="co0">#【?：不在svn的控制中；  M：内容被修改；C：发生冲突；</span>
+　　　　　　　　　　　　　　<span class="co0">#A：预定加入到版本库；K：被锁定】 </span>
+<span class="kw2">svn</span>  <span class="re5">-v</span> 目录路径<span class="sy0">/</span>名
+<span class="kw2">svn status</span> <span class="re5">-v</span> 目录路径<span class="sy0">/</span>名 <span class="co0"># 显示文件和子目录状态</span>
+　　　　　　　　　　　　　　<span class="co0">#【第一列保持相同，第二列显示工作版本号，</span>
+　　　　　　　　　　　　　　　<span class="co0">#第三和第四列显示最后一次修改的版本号和修改人】 </span></pre>
+
+</div>
+<!-- EDIT5 SECTION "查看文件或者目录状态" [1183-1886] -->
+<h1 class="sectionedit6" id="恢复本地修改">恢复本地修改</h1>
+<div class="level1">
+
+<p>
+svn　revert　[–recursive]　文件名
+</p>
+
+<p>
+注意: 本子命令不会存取网络，并且会解除冲突的状况。但是它不会恢复被删除的目录。
+</p>
+<pre class="code bash"><span class="kw2">svn revert</span> foo.c <span class="co0"># 丢弃对一个文件的修改</span>
+<span class="kw2">svn revert</span> <span class="re5">--recursive</span> . <span class="co0">#恢复一整个目录的文件，. 为当前目录 </span></pre>
+
+</div>
+<!-- EDIT6 SECTION "恢复本地修改" [1887-2227] -->
+<h1 class="sectionedit7" id="不checkout而查看输出特定文件或url的内容">不checkout而查看输出特定文件或URL的内容</h1>
+<div class="level1">
+<pre class="code bash"><span class="kw2">svn cat</span> http:<span class="sy0">//</span>localhost<span class="sy0">/</span>test<span class="sy0">/</span>readme.txt  <span class="co0">#</span></pre>
+
+</div>
+<!-- EDIT7 SECTION "不checkout而查看输出特定文件或URL的内容" [2228-2361] -->
+<h1 class="sectionedit8" id="创建纳入版本控制下的新目录">创建纳入版本控制下的新目录</h1>
+<div class="level1">
+<pre class="code bash"><span class="kw2">svn mkdir</span> newdir
+<span class="kw2">svn mkdir</span> <span class="re5">-m</span> <span class="st0">&quot;Making a new dir.&quot;</span> svn:<span class="sy0">//</span>localhost<span class="sy0">/</span>test<span class="sy0">/</span>newdir 
+<span class="co0">#注：添加完子目录后，一定要回到根目录更新一下，不然在该目录下提交文件会提示“提交失败”</span>
+<span class="kw2">svn update</span></pre>
+
+<p>
+svn　mkdir　目录名
+svn　mkdir　-m　“新增目录备注文本”　http:<em>目录全路径
+</p>
+
+</div>
+<!-- EDIT8 SECTION "创建纳入版本控制下的新目录" [2362-] -->

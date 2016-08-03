@@ -1,0 +1,4 @@
+<span class="kw2">svn co</span> svn:<span class="sy0">//</span>localhost<span class="sy0">/</span>svn<span class="sy0">/</span>url <span class="sy0">/</span>home<span class="sy0">/</span>testtools <span class="re5">--username</span> admin
+<span class="kw2">svn co</span> http:<span class="sy0">//</span>localhost<span class="sy0">/</span>svn<span class="sy0">/</span>testapp <span class="re5">--username</span> admin
+<span class="kw2">svn checkout</span> svn:<span class="sy0">//</span>localhost<span class="sy0">/</span><span class="kw2">svn</span> <span class="sy0">/</span>home<span class="sy0">/</span>testtools <span class="re5">--username</span> admin
+<span class="kw2">svn checkout</span> http:<span class="sy0">//</span>localhost<span class="sy0">/</span>test<span class="sy0">/</span>testapp <span class="re5">--username</span> admin

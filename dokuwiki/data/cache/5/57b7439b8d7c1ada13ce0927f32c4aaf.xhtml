@@ -1,0 +1,67 @@
+
+<h1 class="sectionedit1" id="installation">Installation</h1>
+<div class="level1">
+
+</div>
+<!-- EDIT1 SECTION "Installation" [1-28] -->
+<h1 class="sectionedit2" id="rpm">RPM</h1>
+<div class="level1">
+
+<p>
+The RPM package is tested with Fedora and Centos. Create a new files at /etc/yum.repos.d/SCM-Manager.repo with the following content to install the scm-manager repository:
+</p>
+<pre class="code">[scm-releases]
+name=SCM-Manager Releases
+baseurl=http://maven.scm-manager.org/nexus/content/repositories/releases
+enabled=1
+protect=0
+gpgcheck=0
+metadata_expire=30s
+autorefresh=1
+type=rpm-md</pre>
+
+<p>
+After file creation execute the following command to install scm-server:
+</p>
+<pre class="code"># install the scm-server package
+sudo yum install scm-server</pre>
+
+</div>
+<!-- EDIT2 SECTION "RPM" [29-574] -->
+<h1 class="sectionedit3" id="deb">DEB</h1>
+<div class="level1">
+
+<p>
+The DEB package is tested with Debian and Ubuntu. Execute the following commands to install scm-server:
+</p>
+<pre class="code"># add the scm-manager repository
+echo &quot;echo &#039;deb http://maven.scm-manager.org/nexus/content/repositories/releases ./&#039; &gt;&gt; /etc/apt/sources.list&quot; | sudo sh
+
+# install gpg key for the scm-manager repository
+sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 D742B261
+
+# update
+sudo apt-get update
+
+# install scm-server
+sudo apt-get install scm-server</pre>
+
+</div>
+<!-- EDIT3 SECTION "DEB" [575-1079] -->
+<h1 class="sectionedit4" id="migration_from_applicationserver_or_standalone_version">Migration from ApplicationServer or Standalone version</h1>
+<div class="level1">
+
+<p>
+To migrate from an existing installation, you have to the following steps:
+Stop the old service
+Move the folder /opt/scm-server, if it exists
+Install the package
+Copy the content of your existing scm home directory to /var/lib/scm
+Change the owner of the directory and all containing files to scm:scm (chown -R scm:scm /var/lib/scm)
+Verify repositoryDirectory in /var/lib/scm/config/[git|hg|svn].xml], make sure they point to respective /var/lib/scm/repositories/[git|hg|svn] and not your old location. Otherwise the repository health check will fail.
+Optional: Reapply changes to /opt/scm-server/conf/server-config.xml and /opt/scm-server/conf/logging.xml
+Start scm-server (/etc/init.d/scm-server start)
+</p>
+
+</div>
+<!-- EDIT4 SECTION "Migration from ApplicationServer or Standalone version" [1080-] -->

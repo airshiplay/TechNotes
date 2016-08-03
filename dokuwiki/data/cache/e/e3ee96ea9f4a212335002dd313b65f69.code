@@ -1,0 +1,2 @@
+<span class="kw2">svn revert</span> foo.c <span class="co0"># 丢弃对一个文件的修改</span>
+<span class="kw2">svn revert</span> <span class="re5">--recursive</span> . <span class="co0">#恢复一整个目录的文件，. 为当前目录 </span>

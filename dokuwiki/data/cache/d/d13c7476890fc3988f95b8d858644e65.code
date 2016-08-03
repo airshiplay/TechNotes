@@ -1,0 +1,6 @@
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;提交当前目录下的全部在版本控制下的文件&quot;</span> <span class="sy0">*</span>  <span class="co0"># 注意这个*表示全部文件</span>
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> test.php
+<span class="kw2">svn commit</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> <span class="re5">-N</span> <span class="re5">--no-unlock</span> test.php <span class="co0"># 保持锁就用–no-unlock开关</span>
+<span class="kw2">svn ci</span> <span class="re5">-m</span> <span class="st0">&quot;提交当前目录下的全部在版本控制下的文件&quot;</span> <span class="sy0">*</span> <span class="co0"># 注意这个*表示全部文件</span>
+<span class="kw2">svn ci</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> test.php
+<span class="kw2">svn ci</span> <span class="re5">-m</span> <span class="st0">&quot;提交我的测试用test.php&quot;</span> <span class="re5">-N</span> <span class="re5">--no-unlock</span> test.php <span class="co0"># 保持锁就用–no-unlock开关</span>
